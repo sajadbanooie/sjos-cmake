@@ -4,7 +4,7 @@
 //
 
 
-// kernel inital function
+// kernel initial function
 void kernel_init();
 
 // kernel main
