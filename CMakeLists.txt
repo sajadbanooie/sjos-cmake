@@ -5,6 +5,7 @@ ENABLE_LANGUAGE(ASM_NASM)
 ENABLE_LANGUAGE(C)
 set(CMAKE_C_STANDARD 11)
 
+set(ARCH "i386")
 
 function(PROFILE ARCH)
     FILE(GLOB ARCH_SRC "${PROJECT_SOURCE_DIR}/kernel/arch/${ARCH}/*.c" "${PROJECT_SOURCE_DIR}/kernel/arch/${ARCH}/*.asm" "${PROJECT_SOURCE_DIR}/kernel/arch/${ARCH}/*.h")
@@ -28,7 +29,7 @@ function(PROFILE ARCH)
     SET(CMAKE_C_COMPILER "${GCC}" PARENT_SCOPE)
 endfunction()
 
-PROFILE("i386")
+PROFILE("${ARCH}")
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 
@@ -40,6 +41,9 @@ set(CMAKE_ASM_NASM_FLAGS "${ARCH_ASM_FLAGS}")
 FILE(GLOB SOURCE_FILES ${PROJECT_SOURCE_DIR}/kernel/*.c ${PROJECT_SOURCE_DIR}/kernel/*.h)
 
 link_libraries(gcc)
+
+include_directories(${PROJECT_SOURCE_DIR}/kernel/arch/${ARCH})
+include_directories(${PROJECT_SOURCE_DIR}/kernel)
 
 add_executable(SJOS ${ARCH_SRC} ${SOURCE_FILES})
 

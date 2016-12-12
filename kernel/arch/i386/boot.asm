@@ -27,10 +27,13 @@ _start:
     mov esp,kernel_stack_top
 
     extern _init
+    extern _fini
     call _init
 
     extern kernel_init
     call kernel_init
+
+    call _fini
 
     cli
 .hang:	hlt

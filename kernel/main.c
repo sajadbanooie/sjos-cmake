@@ -4,6 +4,9 @@
 //
 
 
+#include <ioports.h>
+#include "version.h"
+
 // kernel initial function
 void kernel_init();
 
@@ -15,5 +18,8 @@ void kernel_init() {
 }
 
 void kernel_main() {
-
+    if (DEBUG){
+        BochsConsolePrintChar('s');
+        BochsBreak();
+    }
 }
