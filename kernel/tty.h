@@ -26,5 +26,6 @@ enum vga_color
     COLOR_WHITE = 15,
 };
 
+void printk(const char * format,...);
 
 #endif //SJOS_TTY_H

@@ -21,7 +21,6 @@
 
 // 1 when debugging is enabled comment this line to disable
 #define DEBUG 1
-
 // bochs debugging macros
 // outputs a character to the debug console
 #define BochsConsolePrintChar(c) outportb(0xe9, c)
