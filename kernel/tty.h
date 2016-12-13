@@ -1,5 +1,5 @@
 //
-// Created by simulation on 12/12/16.
+// Created by sajad on 12/12/16.
 //
 
 #ifndef SJOS_TTY_H
@@ -26,6 +26,8 @@ enum vga_color
     COLOR_WHITE = 15,
 };
 
-void printk(const char * format,...);
+// kernel log functions
+void printk(const char * format, ...);
 
+void klog(const char *tag, uint8_t level, const char *format, ...);
 #endif //SJOS_TTY_H

@@ -19,12 +19,20 @@
 // 3 for finial release
 #define V_BUILD 0
 
-// 1 when debugging is enabled comment this line to disable
-#define DEBUG 1
 // bochs debugging macros
 // outputs a character to the debug console
 #define BochsConsolePrintChar(c) outportb(0xe9, c)
 // stops simulation and breaks into the debug console
 #define BochsBreak() outportw(0x8A00,0x8A00); outportw(0x8A00,0x08AE0);
 
+// log levels
+enum {
+    LOG_DEBUG,
+    LOG_INFO,
+    LOG_WARN,
+    LOG_ERROR,
+};
+
+// current log level
+#define LOG_LEVEL LOG_DEBUG
 #endif //SJOS_VERSION_H

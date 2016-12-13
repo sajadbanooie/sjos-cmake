@@ -3,5 +3,7 @@
 ata1-slave: type=disk, path=sjos.iso, mode=flat
 ata0-master:  type=cdrom, path="sjos.iso", status=inserted
 boot: disk
- log: bochsout.txt
+log: bochsout.txt
+gdbstub: enabled=1, port=63342, text_base=0, data_base=1M, bss_base=0
+
 display_library: x, options="gui_debug"

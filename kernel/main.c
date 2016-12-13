@@ -6,6 +6,7 @@
 
 #include <ioports.h>
 #include "version.h"
+#include "tty.h"
 
 // kernel initial function
 void kernel_init();
@@ -18,8 +19,9 @@ void kernel_init() {
 }
 
 void kernel_main() {
-    if (DEBUG){
+    klog("kernel", LOG_WARN, "salam %d ta salam", 10);
+    if (LOG_LEVEL == LOG_DEBUG) {
         BochsConsolePrintChar('s');
-        BochsBreak();
+//        BochsBreak();
     }
 }
