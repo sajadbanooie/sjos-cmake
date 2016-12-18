@@ -1,0 +1,1 @@
+set(KERNEL_MODULES dummy)

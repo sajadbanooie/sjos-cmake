@@ -9,6 +9,10 @@
 #include "tty.h"
 #include "version.h"
 
+// CRTC registers
+#define CRTC_ADDRESS 0x3D4
+#define CRTC_DATA 0x3D5
+
 // creating entry for vga memory 0000[char][bg color][fg color]
 static inline uint16_t make_vga_entry(char c, uint8_t fg, uint8_t bg)
 {
@@ -37,19 +41,32 @@ static void terminal_putchar_at(size_t row,size_t col, char c,enum vga_color fg,
     VGA_MEMORY[row * VGA_WIDTH + col] = make_vga_entry(c,fg ,bg);
 }
 
-
+// move the cursor
 static void move_cursor(size_t row,size_t col){
-    // TODO: implement cursor movement
+    unsigned short position = (unsigned short) ((row * 80) + col);
+
+    // cursor LOW port to vga INDEX register
+    outportb(0x3D4, 0x0F);
+    outportb(0x3D5, (unsigned char) (position & 0xFF));
+    // cursor HIGH port to vga INDEX register
+    outportb(0x3D4, 0x0E);
+    outportb(0x3D5, (unsigned char) ((position >> 8) & 0xFF));
 }
 
 static void terminal_putchar(char c, uint8_t fg, uint8_t bg) {
-    VGA_MEMORY[cur_col * VGA_WIDTH + cur_row] = make_vga_entry(c,fg ,bg);
-    cur_row++;
-    if (cur_col >= VGA_WIDTH){
-        cur_row = 0;
+    if (c == '\n') {
+        // handling new line
+        cur_col = 0;
+        cur_row++;
+    } else {
+        VGA_MEMORY[cur_row * VGA_WIDTH + cur_col] = make_vga_entry(c, fg, bg);
         cur_col++;
     }
-    move_cursor(cur_col,cur_row);
+    if (cur_col >= VGA_WIDTH) {
+        cur_col = 0;
+        cur_row++;
+    }
+    move_cursor(cur_row, cur_col);
 #if LOG_LEVEL == LOG_DEBUG
     BochsConsolePrintChar((uint8_t) c);
 #endif
@@ -79,7 +96,6 @@ static void print_hex(unsigned int a){
 }
 
 void printk(const char *format, ...) {
-    // TODO: implementation for printk and logging
     va_list args;
     va_start(args, format);
 
@@ -147,7 +163,6 @@ void klog(const char *tag, uint8_t level, const char *format, ...) {
                     break;
                 case 'x':
                     print_hex(va_arg(args, unsigned int));
-                    BochsBreak();
                     break;
                 default:
                     break;
@@ -156,5 +171,6 @@ void klog(const char *tag, uint8_t level, const char *format, ...) {
         }
         terminal_putchar(*(format++), terminal_fgcolor, terminal_bgcolor);
     }
+    terminal_putchar('\n', terminal_fgcolor, terminal_bgcolor);
 }
 

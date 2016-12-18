@@ -5,6 +5,7 @@
 #ifndef SJOS_TTY_H
 #define SJOS_TTY_H
 
+#include <stdint.h>
 // terminal colors
 enum vga_color
 {

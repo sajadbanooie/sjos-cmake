@@ -29,13 +29,20 @@ function(PROFILE ARCH)
     SET(CMAKE_C_COMPILER "${GCC}" PARENT_SCOPE)
 endfunction()
 
+function(MODULES)
+    include("${PROJECT_SOURCE_DIR}/modules/modules.cmake")
+
+    foreach (M ${KERNEL_MODULES})
+        FILE(GLOB MODULE_${M}_SRC "${PROJECT_SOURCE_DIR}/modules/${M}/*.c" "${PROJECT_SOURCE_DIR}/modules/${M}/*.h")
+        add_executable(module_${M} ${MODULE_${M}_SRC})
+        add_custom_command(TARGET module_${M} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "module_${M}" "isodir/boot/modules/module_${M}")
+        set_target_properties(module_${M} PROPERTIES LINK_FLAGS "-T${PROJECT_SOURCE_DIR}/modules/layout.ld -r")
+    endforeach ()
+endfunction()
+
 PROFILE("${ARCH}")
 
 set(CMAKE_VERBOSE_MAKEFILE on)
-
-#flags
-set(CMAKE_C_FLAGS "${ARCH_C_FLAGS} -ffreestanding -nostdlib -fbuiltin -Wall -Wextra -nostartfiles -T${LINKER_LAYOUT}")
-set(CMAKE_ASM_NASM_FLAGS "${ARCH_ASM_FLAGS}")
 
 # generic sources
 FILE(GLOB SOURCE_FILES ${PROJECT_SOURCE_DIR}/kernel/*.c ${PROJECT_SOURCE_DIR}/kernel/*.h)
@@ -47,13 +54,20 @@ include_directories(${PROJECT_SOURCE_DIR}/kernel)
 
 add_executable(SJOS ${ARCH_SRC} ${SOURCE_FILES})
 
+#flags
+set(CMAKE_C_FLAGS "${ARCH_C_FLAGS} -ffreestanding -nostdlib -fbuiltin -Wall -Wextra -nostartfiles")
+set(CMAKE_ASM_NASM_FLAGS "${ARCH_ASM_FLAGS}")
+set_target_properties(SJOS PROPERTIES LINK_FLAGS "-T${LINKER_LAYOUT}")
+
 # coping kernel to boot dir
 add_custom_command(TARGET SJOS POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory isodir)
-add_custom_command(TARGET SJOS POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/kernel/grub.cfg isodir/boot/grub/grub.cfg)
-add_custom_command(TARGET SJOS POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy SJOS isodir/boot/SJOS)
+add_custom_command(TARGET SJOS POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/kernel/grub.cfg isodir/boot/grub/grub.cfg)
+add_custom_command(TARGET SJOS POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different SJOS isodir/boot/SJOS)
 
 #bochs settings
-add_custom_command(TARGET SJOS POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/kernel/bochsrc .)
+add_custom_command(TARGET SJOS POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/kernel/bochsrc .)
 
 #iso
 add_custom_command(TARGET SJOS POST_BUILD COMMAND grub-mkrescue -o sjos.iso isodir)
+
+MODULES()

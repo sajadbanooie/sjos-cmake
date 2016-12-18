@@ -1,5 +1,6 @@
 MBALIGN  equ  1<<0              ; align loaded modules on page boundaries
 MEMINFO  equ  1<<1              ; provide memory map
+VEDMOD  equ  1<<2              ; provide video mode
 FLAGS    equ  MBALIGN | MEMINFO ; this is the Multiboot 'flag' field
 MAGIC    equ  0x1BADB002        ; 'magic number' lets bootloader find the header
 CHECKSUM equ -(MAGIC + FLAGS)   ; checksum of above, to prove we are multiboot
@@ -30,6 +31,7 @@ _start:
     extern _fini
     call _init
 
+    push ebx
     extern kernel_init
     call kernel_init
 
