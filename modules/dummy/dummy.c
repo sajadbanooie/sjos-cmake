@@ -7,6 +7,12 @@
 
 MODULE_NAME("Dummy");
 
-int MODULE_INIT module_init() {
+int main() {
+
+}
+
+int module_init() {
+    for (;;);
+    __asm__("pause");
     return 0;
 }

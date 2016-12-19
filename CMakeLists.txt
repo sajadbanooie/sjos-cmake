@@ -36,7 +36,7 @@ function(MODULES)
         FILE(GLOB MODULE_${M}_SRC "${PROJECT_SOURCE_DIR}/modules/${M}/*.c" "${PROJECT_SOURCE_DIR}/modules/${M}/*.h")
         add_executable(module_${M} ${MODULE_${M}_SRC})
         add_custom_command(TARGET module_${M} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "module_${M}" "isodir/boot/modules/module_${M}")
-        set_target_properties(module_${M} PROPERTIES LINK_FLAGS "-T${PROJECT_SOURCE_DIR}/modules/layout.ld -r")
+        set_target_properties(module_${M} PROPERTIES LINK_FLAGS "-T${PROJECT_SOURCE_DIR}/modules/layout.ld")
     endforeach ()
 endfunction()
 
